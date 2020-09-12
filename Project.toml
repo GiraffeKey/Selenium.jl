@@ -1,0 +1,7 @@
+name = "Selenium"
+uuid = "9ad8f985-aede-434f-b045-c50442d8501b"
+authors = ["GiraffeKey <giraffekey@tutanota.com>"]
+version = "0.1.0"
+
+[deps]
+PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
