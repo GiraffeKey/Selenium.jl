@@ -1,5 +1,7 @@
 module Selenium
 
+import Base: get
+
 using PyCall
 
 function __init__()
@@ -8,13 +10,20 @@ function __init__()
 	"""
 end
 
-chrome(args...) = py"webdriver.Chrome"(args...)
-firefox(args...) = py"webdriver.Firefox"(args...)
-ie(args...) = py"webdriver.Ie"(args...)
+include("constants.jl")
 
-get(browser::PyObject, url::String) = py"(lambda browser, url: browser.get(url))"(browser, url)
-title(browser::PyObject) = py"(lambda browser: browser.title)"(browser)
+struct Driver
+	o::PyObject
+end
 
-export chrome, firefox, ie, get, title
+chrome(args...) = Driver(py"webdriver.Chrome"(args...))
+firefox(args...) = Driver(py"webdriver.Firefox"(args...))
+ie(args...) = Driver(py"webdriver.Ie"(args...))
+
+get(browser::Driver, url::String) = py"(lambda browser, url: browser.get(url))"(browser.o, url)
+title(browser::Driver) = py"(lambda browser: browser.title)"(browser.o)
+quit(browser::Driver) = py"(lambda browser: browser.quit())"(browser.o)
+
+export chrome, firefox, ie, get, title, quit
 
 end
