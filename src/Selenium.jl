@@ -1,6 +1,6 @@
 module Selenium
 
-import Base: get
+import Base: get, parent, size
 
 using PyCall
 
@@ -90,6 +90,6 @@ export find_element, find_element_by_class_name, find_element_by_css_selector, f
 
 export get, implicitly_wait, title, quit
 
-export get_attribute, get_property, click, send_keys, screenshot
+export get_attribute, get_property, is_displayed, is_enabled, is_selected, value_of_css_property, id, location, location_once_scrolled_into_view, parent, rect, screenshot_as_base64, screenshot_as_png, size, tag_name, text, clear, click, screenshot, send_keys, submit
 
 end
