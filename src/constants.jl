@@ -3,7 +3,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 """
 
-
 const BY_CLASS_NAME = py"By.CLASS_NAME"
 const BY_CSS_SELECTOR = py"By.CSS_SELECTOR"
 const BY_ID = py"By.ID"
@@ -14,7 +13,6 @@ const BY_TAG_NAME = py"By.TAG_NAME"
 const BY_XPATH = py"By.XPATH"
 
 export BY_CLASS_NAME, BY_CSS_SELECTOR, BY_ID, BY_LINK_TEXT, BY_NAME, BY_PARTIAL_LINK_TEXT, BY_TAG_NAME, BY_XPATH
-
 
 const KEY_ADD = py"Keys.ADD"
 const KEY_ALT = py"Keys.ALT"
