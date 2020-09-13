@@ -22,9 +22,79 @@ struct Element
 	o::PyObject
 end
 
-chrome(args...) = Driver(py"webdriver.Chrome"(args...))
-firefox(args...) = Driver(py"webdriver.Firefox"(args...))
-ie(args...) = Driver(py"webdriver.Ie"(args...))
+struct ChromeOptions
+	o::PyObject
+end
+
+struct FirefoxOptions
+	o::PyObject
+end
+
+function chrome(;options::ChromeOptions=ChromeOptions(Nothing))
+	kwargs::Array{Any} = []
+	py_args::Array{String} = []
+	
+	if options.o != Nothing
+		push!(kwargs, options.o)
+		push!(py_args, "options")
+	end
+
+	code = "(lambda $(join(py_args, ",")): webdriver.Chrome($(join(map(a -> "$a=$a", py_args), ","))))"
+	Driver(py"$$code"(kwargs...))
+end
+
+function firefox(;options::FirefoxOptions=FirefoxOptions(Nothing))
+	kwargs::Array{Any} = []
+	py_args::Array{String} = []
+	
+	if options.o != Nothing
+		push!(kwargs, options.o)
+		push!(py_args, "options")
+	end
+	
+	code = "(lambda $(join(py_args, ",")): webdriver.Firefox($(join(map(a -> "$a=$a", py_args), ","))))"
+	Driver(py"$$code"(kwargs...))
+end
+
+export Driver, Element, ChromeOptions, FirefoxOptions, chrome, firefox
+
+# Options
+
+chrome_options() = ChromeOptions(py"webdriver.ChromeOptions"())
+firefox_options() = FirefoxOptions(py"webdriver.FirefoxOptions"())
+
+add_argument(options::ChromeOptions, argument::String) = py"(lambda options, argument: options.add_argument(argument))"(options.o, argument)
+add_encoded_extension(options::ChromeOptions, extension::String) = py"(lambda options, extension: options.add_encoded_extension(extension))"(options.o, extension)
+add_experimental_option(options::ChromeOptions, name::String, value::String) = py"(lambda options, name, value: options.add_experimental_option(name, value))"(options.o, name, value)
+add_extension(options::ChromeOptions, extension::String) = py"(lambda options, extension: options.add_extension(extension))"(options.o, extension)
+set_capability(options::ChromeOptions, name::String, value::String) = py"(lambda options, name, value: options.set_capability(name, value))"(options.o, name, value)
+set_headless(options::ChromeOptions, headless::Bool=true) = py"(lambda options, headless: options.set_headless(headless))"(options.o, headless)
+to_capabilities(options::ChromeOptions) = py"(lambda options: options.to_capabilities())"(options.o)
+
+arguments(options::ChromeOptions) = py"(lambda options: options.arguments)"(options.o)
+binary_location(options::ChromeOptions) = py"(lambda options: options.binary_location)"(options.o)
+capabilities(options::ChromeOptions) = py"(lambda options: options.capabilities)"(options.o)
+debugger_address(options::ChromeOptions) = py"(lambda options: options.debugger_address)"(options.o)
+experimental_options(options::ChromeOptions) = py"(lambda options: options.experimental_options)"(options.o)
+extensions(options::ChromeOptions) = py"(lambda options: options.extensions)"(options.o)
+headless(options::ChromeOptions) = py"(lambda options: options.headless)"(options.o)
+
+add_argument(options::FirefoxOptions, argument::String) = py"(lambda options, argument: options.add_argument(argument))"(options.o, argument)
+set_capability(options::FirefoxOptions, name::String, value::String) = py"(lambda options, name, value: options.set_capability(name, value))"(options.o, name, value)
+set_headless(options::FirefoxOptions, headless::Bool=true) = py"(lambda options, headless: options.set_headless(headless))"(options.o, headless)
+set_preference(options::FirefoxOptions, name::String, value::String) = py"(lambda options, name, value: options.set_preference(name, value))"(options.o, name, value)
+to_capabilities(options::FirefoxOptions) = py"(lambda options: options.to_capabilities())"(options.o)
+
+arguments(options::FirefoxOptions) = py"(lambda options: options.arguments)"(options.o)
+binary(options::FirefoxOptions) = py"(lambda options: options.binary)"(options.o)
+binary_location(options::FirefoxOptions) = py"(lambda options: options.binary_location)"(options.o)
+capabilities(options::FirefoxOptions) = py"(lambda options: options.capabilities)"(options.o)
+headless(options::FirefoxOptions) = py"(lambda options: options.headless)"(options.o)
+preferences(options::FirefoxOptions) = py"(lambda options: options.preferences)"(options.o)
+profile(options::FirefoxOptions) = py"(lambda options: options.profile)"(options.o)
+proxy(options::FirefoxOptions) = py"(lambda options: options.proxy)"(options.o)
+
+export chrome_options, firefox_options, add_argument, add_encoded_extension, add_experimental_option, add_extension, set_capability, set_headless, to_capabilities, arguments, binary_location, capabilities, debugger_address, experimental_options, extensions, headless, set_preference, binary, preferences, profile, proxy
 
 # Driver
 
@@ -43,6 +113,9 @@ get(browser::Driver, url::String) = py"(lambda browser, url: browser.get(url))"(
 implicitly_wait(browser::Driver, secs::Int64) = py"(lambda browser, secs: browser.implicitly_wait(secs))"(browser.o, secs)
 title(browser::Driver) = py"(lambda browser: browser.title)"(browser.o)
 quit(browser::Driver) = py"(lambda browser: browser.quit())"(browser.o)
+
+export find_element, find_element_by_class_name, find_element_by_css_selector, find_element_by_id, find_element_by_link_text, find_element_by_name, find_element_by_partial_link_text, find_element_by_tag_name, find_element_by_xpath
+export get, implicitly_wait, title, quit
 
 # Element
 
@@ -81,14 +154,6 @@ send_keys(elem::Element, value...) = py"(lambda elem, *value: elem.send_keys(*va
 submit(elem::Element) = py"(lambda elem: elem.submit())"(elem.o)
 
 (==)(a::Element, b::Element) = py"(lambda a, b: a == b)"(a.o, b.o)
-
-# Exports
-
-export Driver, Element, chrome, firefox, ie
-
-export find_element, find_element_by_class_name, find_element_by_css_selector, find_element_by_id, find_element_by_link_text, find_element_by_name, find_element_by_partial_link_text, find_element_by_tag_name, find_element_by_xpath
-
-export get, implicitly_wait, title, quit
 
 export get_attribute, get_property, is_displayed, is_enabled, is_selected, value_of_css_property, id, location, location_once_scrolled_into_view, parent, rect, screenshot_as_base64, screenshot_as_png, size, tag_name, text, clear, click, screenshot, send_keys, submit
 

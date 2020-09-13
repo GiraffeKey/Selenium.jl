@@ -17,6 +17,13 @@ Download the respective drivers:
 | **Firefox**: | https://github.com/mozilla/geckodriver/releases                       |
 | **Safari**:  | https://webkit.org/blog/6900/webdriver-support-in-safari-10/          |
 
+## TODO
+
+[ ] Full coverage of Selenium's API
+[ ] Write tests
+[ ] Utilize the strengths of Julia more effectively (instead of just directly ripping from the Python API)
+[ ] Minimize calls to other languages
+
 ## Usage
 
 ```julia
@@ -26,5 +33,5 @@ browser = firefox()
 
 get(browser, "http://yahoo.com")
 
-println(title(browser))
+(println ∘ title)(browser)
 ```
