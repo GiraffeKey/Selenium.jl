@@ -19,10 +19,10 @@ Download the respective drivers:
 
 ## TODO
 
-[ ] Full coverage of Selenium's API
-[ ] Write tests
-[ ] Utilize the strengths of Julia more effectively (instead of just directly ripping from the Python API)
-[ ] Minimize calls to other languages
+- [ ] Full coverage of Selenium's API
+- [ ] Write tests
+- [ ] Utilize the strengths of Julia more effectively (instead of just directly ripping from the Python API)
+- [ ] Minimize calls to other languages
 
 ## Usage
 
